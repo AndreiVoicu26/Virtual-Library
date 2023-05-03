@@ -1,0 +1,42 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Person List";
+}
+
+<h1>Person <small class="text-muted">List</small></h1>
+
+<div class="row">
+    <div class="col-lg-12">
+        <a class="btn btn-primary" asp-page="./Create" role="button">Create</a>
+        @if (Model.Persons.Any())
+        {
+            <table class="table table-hover">
+                <thead>
+                    <tr>                        
+                        <th scope="col">Person</th>                        
+                        <th scope="col">Age</th>
+                        <th scope="col">Last Updated</th>
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var mi in Model.Persons)
+                    {
+                        <tr>
+                            <td>@mi.Name</td>
+                            <td>@mi.Age</td>
+                            <td>@mi.LastUpdatedOn</td>
+                            <td><a asp-page="Edit" asp-route-id="@mi.Id">Edit</a> | <a asp-page="Delete" asp-route-id="@mi.Id">Delete</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <h6>@Model.Persons.Count() persons defined.</h6>
+        }
+        else
+        {
+            <h6>Persons defined in the system will appear here.</h6>
+        }
+    </div>
+</div>
