@@ -6,7 +6,8 @@ namespace PersonBook.Web.Areas.Person.Pages
 {
     public class DeleteModel : PageModel
     {
-        [BindProperty] public string Name { get; set; }
+        [BindProperty] public string FirstName { get; set; }
+        [BindProperty] public string LastName { get; set; }
         [BindProperty] public IList<string> ErrorMessages { get; set; }
 
         private readonly IPersonRepository personRepository;
@@ -20,7 +21,8 @@ namespace PersonBook.Web.Areas.Person.Pages
         public async Task<IActionResult> OnGetAsync(Guid Id)
         {
             var info = await personRepository.GetPersonById(Id);
-            Name = info.Name;
+            FirstName = info.FirstName;
+            LastName = info.LastName;
             return Page();
         }
 

@@ -4,12 +4,12 @@
     ViewData["Title"] = "Delete Person";
 }
 
-<h1>Delete Person <small class="text-muted">@Model.Name</small></h1>
-<p>Are you sure you want to delete person @Model.Name?</p>
+<h1>Delete Person <small class="text-muted">@Model.FirstName @Model.LastName</small></h1>
+<p>Are you sure you want to delete person @Model.FirstName @Model.LastName?</p>
 <div class="row">
     <div class="col-lg-12">
         <form method="post">
-            <input type="hidden" asp-for="Name" />
+            <input type="hidden" asp-for="FirstName" />
 
             <button type="submit" class="btn btn-danger">Delete</button>
             <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
