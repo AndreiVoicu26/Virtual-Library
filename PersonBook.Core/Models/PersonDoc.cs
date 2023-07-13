@@ -13,15 +13,18 @@ namespace PersonBook.Core.Models
         public const string CollectionName = "Persons";
 
         public PersonDoc() {
-            Name = string.Empty;
-            Age = int.MinValue;
+            FirstName = string.Empty;
+            LastName = string.Empty;
+            DateOfBirth = DateOnly.MinValue;
             LastUpdatedOn = DateTime.MinValue;
         }
 
         [BsonId]
         public Guid Id { get; set; }
-        public string Name { get; set; }
-        public int Age { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public DateOnly DateOfBirth { get; set; }
+
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime LastUpdatedOn { get; set; }
     }

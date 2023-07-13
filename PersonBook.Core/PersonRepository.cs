@@ -20,18 +20,20 @@ namespace PersonBook.Core
         /// <summary>
         /// Create a new person
         /// </summary>
-        /// <param name="Name">Person's name</param>        
+        /// <param name="FirstName">Person's first name</param> 
+        /// <param name="LastName">Person's last name</param>
         /// <returns>A DbResult structure containing the result of the database operation</returns>        
-        public async Task<DbResult> AddPersonAsync(string Name)
+        public async Task<DbResult> AddPersonAsync(string FirstName, string LastName)
         {
             var Persons = await GetPersons();
-            if (Persons.Any(a => a.Name.Equals(Name)))
+            if (Persons.Any(a => a.FirstName.Equals(FirstName) && a.LastName.Equals(LastName)))
             {
-                return DbResult.Fail($"A person named '{Name}' already exists.");
+                return DbResult.Fail($"A person named '{FirstName} {LastName}' already exists.");
             }
             var newDoc = new PersonDoc
             {
-                Name = Name,                
+                FirstName = FirstName,     
+                LastName = LastName,
                 LastUpdatedOn = DateTime.UtcNow.ToLocalTime()
             };
             try
@@ -49,15 +51,31 @@ namespace PersonBook.Core
         /// Set the person name
         /// </summary>
         /// <param name="Id">Person id</param>
-        /// <param name="Name">Person name</param>
+        /// <param name="FirstName">Person first name</param>
         /// <returns>A DbResult structure containing the result of the database operation</returns>
-        public async Task<DbResult> SetPersonNameAsync(Guid Id, string Name)
+        public async Task<DbResult> SetPersonFirstNameAsync(Guid Id, string FirstName)
         {
             var res = await context.PersonCollection.UpdateOneAsync(r => r.Id.Equals(Id),
                 Builders<PersonDoc>
                 .Update
                 .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
-                .Set(r => r.Name, Name));
+                .Set(r => r.FirstName, FirstName));
+            return res.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
+        }
+
+        /// <summary>
+        /// Set the person name
+        /// </summary>
+        /// <param name="Id">Person id</param>
+        /// <param name="LastName">Person last name</param>
+        /// <returns>A DbResult structure containing the result of the database operation</returns>
+        public async Task<DbResult> SetPersonLastNameAsync(Guid Id, string LastName)
+        {
+            var res = await context.PersonCollection.UpdateOneAsync(r => r.Id.Equals(Id),
+                Builders<PersonDoc>
+                .Update
+                .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
+                .Set(r => r.LastName, LastName));
             return res.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
         }
 
@@ -65,15 +83,15 @@ namespace PersonBook.Core
         /// Set the person age
         /// </summary>
         /// <param name="Id">Person id</param>
-        /// <param name="Age">Person age</param>        
+        /// <param name="DateOfBirth">Person date of birth</param>        
         /// <returns>A DbResult structure containing the result of the database operation</returns>
-        public async Task<DbResult> SetPersonAgeAsync(Guid Id, int Age)
+        public async Task<DbResult> SetPersonDateOfBirthAsync(Guid Id, DateOnly DateOfBirth)
         {
             var res = await context.PersonCollection.UpdateOneAsync(r => r.Id.Equals(Id),
                 Builders<PersonDoc>
                 .Update
                 .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
-                .Set(r => r.Age, Age));
+                .Set(r => r.DateOfBirth, DateOfBirth));
             return res.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
         }        
 

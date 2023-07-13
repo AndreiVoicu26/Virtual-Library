@@ -1,4 +1,4 @@
 ﻿namespace PersonBook.Core
 {
-    public record PersonInfo(Guid Id, string Name, int Age, DateTime LastUpdatedOn);
+    public record PersonInfo(Guid Id, string FirstName, string LastName, DateOnly DateOfBirth, DateTime LastUpdatedOn);
 }
