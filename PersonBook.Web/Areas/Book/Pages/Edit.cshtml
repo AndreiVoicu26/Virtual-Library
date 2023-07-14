@@ -1,0 +1,47 @@
+﻿@page "{id}"
+@model EditModel
+@{
+    ViewData["Title"] = "Edit Book";
+}
+
+<h1>Edit Book <small class="text-muted">@Model.Title by @Model.Author</small></h1>
+
+<div class="row">
+    <div class="col-lg-12">
+        @if (Model.ErrorMessages.Any())
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                <div>
+                    @foreach (var em in Model.ErrorMessages)
+                    {
+                        <text>@em</text>
+                        <br />
+                    }
+                </div>
+            </div>
+        }
+        <form method="post">
+            <div class="mb-3">
+                <label for="@Model.Title" class="form-label">Title</label>
+                <input asp-for="Title" value="@Model.Title" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label for="@Model.Author" class="form-label">Author</label>
+                <input asp-for="Author" value="@Model.Author" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label for="@Model.Isbn" class="form-label">ISBN</label>
+                <input asp-for="Isbn" value="@Model.Isbn" class="form-control" required />
+            </div>
+            <div class="mb-3">
+                <label for="@Model.Year" class="form-label">Year</label>
+                <input asp-for="Year" value="@Model.Year" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-dark">Save</button>
+            <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+
+<partial name="_Symbols" />

@@ -30,6 +30,7 @@ builder.Services.AddSingleton<DataContext>(x => new DataContext(x.GetService<IOp
 
 // Add IPFees services
 builder.Services.AddTransient<IPersonRepository, PersonRepository>();
+builder.Services.AddTransient<IBookRepository, BookRepository>();
 
 // Add logger
 builder.Logging.AddSerilog(logger);
