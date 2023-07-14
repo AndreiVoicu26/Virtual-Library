@@ -13,6 +13,7 @@ namespace PersonBook.Core.Data
     {
         public IMongoDatabase Context { get; private set; }        
         public IMongoCollection<PersonDoc> PersonCollection { get; set; }
+        public IMongoCollection<BookDoc> BookCollection { get; set; }
 
         private string ConnectionString { get; set; }
         private string DatabaseName { get; set; }
@@ -25,7 +26,8 @@ namespace PersonBook.Core.Data
             if (client != null)
                 Context = client.GetDatabase(DatabaseName);
                         
-            PersonCollection = Context.GetCollection<PersonDoc>(PersonDoc.CollectionName);                        
+            PersonCollection = Context.GetCollection<PersonDoc>(PersonDoc.CollectionName); 
+            BookCollection = Context.GetCollection<BookDoc>(BookDoc.CollectionName);
         }
 
         public void DropDatabase()
