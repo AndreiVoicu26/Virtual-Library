@@ -2,15 +2,10 @@
 using MongoDB.Bson;
 using MongoDB.Driver;
 using PersonBook.Core.Data;
+using PersonBook.Core.Info;
 using PersonBook.Core.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Reflection.Metadata.BlobBuilder;
 
-namespace PersonBook.Core
+namespace PersonBook.Core.Repositories
 {
     public class BookRepository : IBookRepository
     {
@@ -28,19 +23,21 @@ namespace PersonBook.Core
         /// <param name="Isbn">Book ISBN</param>
         /// <param name="Year">Book Year</param>
         /// <returns>A DbResult structure containing the result of the database operation</returns>     
-        public async Task<DbResult> AddBookAsync(string Title, string Author, string Isbn, short Year)    
+        public async Task<DbResult> AddBookAsync(string Title, string Author, string Isbn, short Year)
         {
             var Books = await GetBooks();
-            if(Books.Any(b => b.Title.Equals(Title)))
+            if (Books.Any(b => b.Title.Equals(Title)))
             {
                 return DbResult.Fail($"A book named '{Title}' already exists");
             }
             var newDoc = new BookDoc
-            { Title = Title, 
-              Author = Author, 
-              Isbn = Isbn, 
-              Year = Year,
-              LastUpdated = DateTime.UtcNow.ToLocalTime()
+            {
+                Title = Title,
+                Author = Author,
+                Isbn = Isbn,
+                Year = Year,
+                IsAvailable = true,
+                LastUpdated = DateTime.UtcNow.ToLocalTime()
             };
             try
             {
@@ -152,6 +149,12 @@ namespace PersonBook.Core
         /// <returns>A DbResult structure containing the result of the database operation</returns>
         public async Task<DbResult> RemoveBookAsync(Guid Id)
         {
+            var filter = Builders<BookDoc>.Filter.Eq(m => m.Id, Id);
+            var book = (await context.BookCollection.FindAsync(filter)).FirstOrDefaultAsync().Result;
+            if (!book.IsAvailable)
+            {
+                return DbResult.Fail($"The book '{book.Title} by {book.Author}' is borrowed by someone and cannot be removed.");
+            }
             try
             {
                 await context.BookCollection.DeleteOneAsync(s => s.Id.Equals(Id));
@@ -163,6 +166,15 @@ namespace PersonBook.Core
             }
         }
 
-
+        /// <summary>
+        /// Get all available books
+        /// </summary>
+        /// <returns>An enumeration of BookInfo objects</returns>
+        public async Task<IEnumerable<BookInfo>> GetAvailableBooks()
+        {
+            var filter = Builders<BookDoc>.Filter.Eq(m => m.IsAvailable, true);
+            var books = await context.BookCollection.FindAsync(filter);
+            return books.ToList().Adapt<IEnumerable<BookInfo>>();
+        }
     }
 }

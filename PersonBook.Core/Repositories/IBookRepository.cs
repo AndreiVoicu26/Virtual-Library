@@ -1,11 +1,7 @@
 ﻿using PersonBook.Core.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PersonBook.Core.Info;
 
-namespace PersonBook.Core
+namespace PersonBook.Core.Repositories
 {
     public interface IBookRepository
     {
@@ -17,5 +13,6 @@ namespace PersonBook.Core
         Task<DbResult> RemoveBookAsync(Guid Id);
         Task<IEnumerable<BookInfo>> GetBooks();
         Task<BookInfo> GetBookById(Guid Id);
+        Task<IEnumerable<BookInfo>> GetAvailableBooks();
     }
 }

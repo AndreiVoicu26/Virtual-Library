@@ -1,6 +1,7 @@
 ﻿using PersonBook.Core.Data;
+using PersonBook.Core.Info;
 
-namespace PersonBook.Core
+namespace PersonBook.Core.Repositories
 {
     public interface IPersonRepository
     {
@@ -10,6 +11,9 @@ namespace PersonBook.Core
         Task<DbResult> SetPersonDateOfBirthAsync(Guid Id, DateOnly DateOfBirth);
         Task<DbResult> RemovePersonAsync(Guid Id);
         Task<IEnumerable<PersonInfo>> GetPersons();
-        Task<PersonInfo> GetPersonById(Guid Id);        
+        Task<PersonInfo> GetPersonById(Guid Id);
+        Task<IEnumerable<BookInfo>> GetBorrowedBooks(Guid Id);
+        Task<DbResult> BorrowBooksAsync(Guid Id, IEnumerable<BookInfo> books);
+        Task<DbResult> ReturnBooksAsync(Guid Id, IEnumerable<BookInfo> books);
     }
 }

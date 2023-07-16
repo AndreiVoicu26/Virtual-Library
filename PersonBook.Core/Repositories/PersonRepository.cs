@@ -3,11 +3,9 @@ using PersonBook.Core.Models;
 using Mapster;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using System.Diagnostics.Tracing;
-using System.Runtime.Versioning;
-using static System.Net.Mime.MediaTypeNames;
+using PersonBook.Core.Info;
 
-namespace PersonBook.Core
+namespace PersonBook.Core.Repositories
 {
     public class PersonRepository : IPersonRepository
     {
@@ -32,7 +30,7 @@ namespace PersonBook.Core
             }
             var newDoc = new PersonDoc
             {
-                FirstName = FirstName,     
+                FirstName = FirstName,
                 LastName = LastName,
                 LastUpdatedOn = DateTime.UtcNow.ToLocalTime()
             };
@@ -93,7 +91,7 @@ namespace PersonBook.Core
                 .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
                 .Set(r => r.DateOfBirth, DateOfBirth));
             return res.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
-        }        
+        }
 
         /// <summary>
         /// Get all registered persons.
@@ -124,6 +122,12 @@ namespace PersonBook.Core
         /// <returns>A DbResult structure containing the result of the database operation</returns>
         public async Task<DbResult> RemovePersonAsync(Guid Id)
         {
+            var filter = Builders<PersonDoc>.Filter.Eq(m => m.Id, Id);
+            var person = (await context.PersonCollection.FindAsync(filter)).FirstOrDefaultAsync().Result;
+            if (person.Books != null && person.Books.Any())
+            {
+                return DbResult.Fail($"'{person.FirstName} {person.LastName}' has unreturned books.");
+            }
             try
             {
                 await context.PersonCollection.DeleteOneAsync(s => s.Id.Equals(Id));
@@ -133,6 +137,92 @@ namespace PersonBook.Core
             {
                 return DbResult.Fail(ex);
             }
-        }        
+        }
+
+        /// <summary>
+        /// Get all books borrowed by a specified person
+        /// </summary>
+        /// <param name="Id">Persoon id</param>
+        /// <returns>An enumeration of BookInfo objects</returns>
+        public async Task<IEnumerable<BookInfo>> GetBorrowedBooks(Guid Id)
+        {
+            var filter_person = Builders<PersonDoc>.Filter.Eq(m => m.Id, Id);
+            var person = (await context.PersonCollection.FindAsync(filter_person)).FirstOrDefaultAsync().Result;
+            if (person.Books != null)
+            {
+                return person.Books.ToList().Adapt<IEnumerable<BookInfo>>();
+            }
+            else
+            {
+                return Enumerable.Empty<BookInfo>();
+            }
+        }
+
+        /// <summary>
+        /// Borrow a list of books
+        /// </summary>
+        /// <param name="Id">Person id</param>
+        /// <param name="SelectedBooks">Selected books to borrow</param>
+        /// <returns>A DbResult structure containing the result of the database operation</returns>
+        public async Task<DbResult> BorrowBooksAsync(Guid Id, IEnumerable<BookInfo> SelectedBooks)
+        {
+            var filter_person = Builders<PersonDoc>.Filter.Eq(m => m.Id, Id);
+            var person = (await context.PersonCollection.FindAsync(filter_person)).FirstOrDefaultAsync().Result;
+            var books = person.Books;
+            if (books == null)
+            {
+                books = new List<BookInfo>();
+            }
+            foreach (var book in SelectedBooks)
+            {
+                var res1 = await context.BookCollection.UpdateOneAsync(b => b.Id.Equals(book.Id),
+                    Builders<BookDoc>
+                    .Update
+                    .Set(r => r.LastUpdated, DateTime.UtcNow.ToLocalTime())
+                    .Set(r => r.IsAvailable, false));
+                if (!res1.IsAcknowledged) return DbResult.Fail();
+                var filter_book = Builders<BookDoc>.Filter.Eq(m => m.Id, book.Id);
+                var bookDoc = (await context.BookCollection.FindAsync(filter_book)).FirstOrDefaultAsync().Result;
+                books.Add(bookDoc.Adapt<BookInfo>());
+            }
+            var res2 = await context.PersonCollection.UpdateOneAsync(filter_person,
+                Builders<PersonDoc>
+                .Update
+                .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
+                .Set(r => r.Books, books));
+            return res2.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
+        }
+
+        /// <summary>
+        /// Return a list of books
+        /// </summary>
+        /// <param name="Id">Person id</param>
+        /// <param name="SelectedBooks">Selected books to return</param>
+        /// <returns>A DbResult structure containing the result of the database operation</returns>
+        public async Task<DbResult> ReturnBooksAsync(Guid Id, IEnumerable<BookInfo> SelectedBooks)
+        {
+            var filter_person = Builders<PersonDoc>.Filter.Eq(m => m.Id, Id);
+            var person = (await context.PersonCollection.FindAsync(filter_person)).FirstOrDefaultAsync().Result;
+            var books = person.Books;
+            foreach (var book in SelectedBooks)
+            {
+                var res1 = await context.BookCollection.UpdateOneAsync(b => b.Id.Equals(book.Id),
+                    Builders<BookDoc>
+                    .Update
+                    .Set(r => r.LastUpdated, DateTime.UtcNow.ToLocalTime())
+                    .Set(r => r.IsAvailable, true));
+                books.Remove(book);
+                if (!res1.IsAcknowledged) return DbResult.Fail();
+                var filter_book = Builders<BookDoc>.Filter.Eq(m => m.Id, book.Id);
+                var bookDoc = (await context.BookCollection.FindAsync(filter_book)).FirstOrDefaultAsync().Result;
+                books.Remove(bookDoc.Adapt<BookInfo>());
+            }
+            var res2 = await context.PersonCollection.UpdateOneAsync(filter_person,
+                Builders<PersonDoc>
+                .Update
+                .Set(r => r.LastUpdatedOn, DateTime.UtcNow.ToLocalTime())
+                .Set(r => r.Books, books));
+            return res2.IsAcknowledged ? DbResult.Succeed() : DbResult.Fail();
+        }
     }
 }

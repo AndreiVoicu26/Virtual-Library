@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PersonBook.Core.Data
+﻿namespace PersonBook.Core.Data
 {
     public class DbResult
     {
