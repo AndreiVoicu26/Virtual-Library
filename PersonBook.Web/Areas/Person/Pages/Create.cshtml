@@ -24,17 +24,17 @@
         <form method="post">
             <div class="mb-3">
                 <label for="@Model.FirstName" class="form-label">First name</label>
-                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" required />                
+                <input asp-for="FirstName" value="@Model.FirstName" class="form-control" required autocomplete="off" />
             </div>
             <div class="mb-3">
                 <label for="@Model.LastName" class="form-label">Last name</label>
-                <input asp-for="LastName" value="@Model.LastName" class="form-control" required />
+                <input asp-for="LastName" value="@Model.LastName" class="form-control" required autocomplete="off" />
             </div>
             <div class="mb-3">
                 <label for="@Model.DateOfBirth" class="form-label">Date of birth</label>
-                <input asp-for="DateOfBirth" class="form-control" required />
+                <input asp-for="DateOfBirth" class="form-control" required autocomplete="off" />
             </div>            
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-dark">Create</button>
             <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
         </form>
     </div>

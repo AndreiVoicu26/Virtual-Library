@@ -8,12 +8,26 @@
 <p>Are you sure you want to delete person @Model.FirstName @Model.LastName?</p>
 <div class="row">
     <div class="col-lg-12">
+        @if (Model.ErrorMessages.Any())
+        {
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill" /></svg>
+                <div>
+                    @foreach (var em in Model.ErrorMessages)
+                    {
+                        <text>@em</text>
+                        <br />
+                    }
+                </div>
+            </div>
+        }
         <form method="post">
             <input type="hidden" asp-for="FirstName" />
-
+            <input type="hidden" asp-for="LastName" />
             <button type="submit" class="btn btn-danger">Delete</button>
             <a asp-page="./Index" class="btn btn-secondary">Cancel</a>
         </form>
-
     </div>
 </div>
+
+<partial name="_Symbols" />

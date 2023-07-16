@@ -1,7 +1,8 @@
-using PersonBook.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
+using PersonBook.Core.Repositories;
+using PersonBook.Core.Info;
 
 namespace PersonBook.Web.Areas.Person.Pages
 {

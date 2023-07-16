@@ -1,9 +1,9 @@
-using PersonBook.Core;
 using PersonBook.Web.Data;
 using PersonBook.Core.Data;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Formatting.Compact;
+using PersonBook.Core.Repositories;
 
 // Set Serilog settings
 var logger = new LoggerConfiguration()

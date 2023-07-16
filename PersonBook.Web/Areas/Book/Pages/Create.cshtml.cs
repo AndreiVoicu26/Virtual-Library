@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PersonBook.Core;
+using PersonBook.Core.Repositories;
 
 namespace PersonBook.Web.Areas.Book.Pages
 {
@@ -38,5 +38,5 @@ namespace PersonBook.Web.Areas.Book.Pages
         }
     }
 
-    public record BookViewModel(Guid Id, string Title, string Author, string Isbn, short Year, DateTime LastUpdated);
+    public record BookViewModel(Guid Id, string Title, string Author, string Isbn, short Year, bool IsAvailable, DateTime LastUpdated);
 }
