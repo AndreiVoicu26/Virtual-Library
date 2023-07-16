@@ -1,9 +1,5 @@
-﻿using PersonBook.Core.Tests.Fixture;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PersonBook.Core.Repositories;
+using PersonBook.Core.Tests.Fixture;
 
 namespace PersonBook.Core.Tests
 {

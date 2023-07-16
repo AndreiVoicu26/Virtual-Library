@@ -1,6 +1,5 @@
 using PersonBook.Core.Tests.Fixture;
-using PersonBook.Core;
-using PersonBook.Core.Data;
+using PersonBook.Core.Repositories;
 
 namespace PersonBook.Core.Tests
 {
