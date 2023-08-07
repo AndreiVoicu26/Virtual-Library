@@ -14,5 +14,6 @@ namespace PersonBook.Core.Repositories
         Task<IEnumerable<BookInfo>> GetBooks();
         Task<BookInfo> GetBookById(Guid Id);
         Task<IEnumerable<BookInfo>> GetAvailableBooks();
+        Task<IEnumerable<PersonInfo>> GetOwnersOfBook(Guid Id);
     }
 }

@@ -169,17 +169,18 @@ namespace PersonBook.Core.Repositories
             var filter_person = Builders<PersonDoc>.Filter.Eq(m => m.Id, Id);
             var person = (await context.PersonCollection.FindAsync(filter_person)).FirstOrDefaultAsync().Result;
             var books = person.Books;
-            if (books == null)
-            {
-                books = new List<BookInfo>();
-            }
+            books ??= new List<BookInfo>();
             foreach (var book in SelectedBooks)
             {
+                var owners = book.Owners;
+                owners ??= new List<PersonInfo>();
+                owners.Add(person.Adapt<PersonInfo>());
                 var res1 = await context.BookCollection.UpdateOneAsync(b => b.Id.Equals(book.Id),
                     Builders<BookDoc>
                     .Update
                     .Set(r => r.LastUpdated, DateTime.UtcNow.ToLocalTime())
-                    .Set(r => r.IsAvailable, false));
+                    .Set(r => r.IsAvailable, false)
+                    .Set(r => r.Owners, owners));
                 if (!res1.IsAcknowledged) return DbResult.Fail();
                 var filter_book = Builders<BookDoc>.Filter.Eq(m => m.Id, book.Id);
                 var bookDoc = (await context.BookCollection.FindAsync(filter_book)).FirstOrDefaultAsync().Result;
@@ -211,11 +212,12 @@ namespace PersonBook.Core.Repositories
                     .Update
                     .Set(r => r.LastUpdated, DateTime.UtcNow.ToLocalTime())
                     .Set(r => r.IsAvailable, true));
-                books.Remove(book);
                 if (!res1.IsAcknowledged) return DbResult.Fail();
-                var filter_book = Builders<BookDoc>.Filter.Eq(m => m.Id, book.Id);
-                var bookDoc = (await context.BookCollection.FindAsync(filter_book)).FirstOrDefaultAsync().Result;
-                books.Remove(bookDoc.Adapt<BookInfo>());
+                foreach (var selected in books.Where(selected => selected.Id.Equals(book.Id)))
+                {
+                    books.Remove(selected);
+                    break;
+                }
             }
             var res2 = await context.PersonCollection.UpdateOneAsync(filter_person,
                 Builders<PersonDoc>

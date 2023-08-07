@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using PersonBook.Core.Info;
 
 namespace PersonBook.Core.Models
 {
@@ -13,6 +14,7 @@ namespace PersonBook.Core.Models
             Isbn = string.Empty;
             Year = short.MinValue;
             IsAvailable = true;
+            Owners = null;
             LastUpdated = DateTime.MinValue;
         }
 
@@ -23,6 +25,7 @@ namespace PersonBook.Core.Models
         public string Isbn { get; set; }
         public short Year { get; set; }
         public bool IsAvailable { get; set; }
+        public IList<PersonInfo>? Owners { get; set; }
 
         [BsonDateTimeOptions(Kind = DateTimeKind.Local)]
         public DateTime LastUpdated { get; set; }

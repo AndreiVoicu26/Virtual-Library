@@ -176,5 +176,14 @@ namespace PersonBook.Core.Repositories
             var books = await context.BookCollection.FindAsync(filter);
             return books.ToList().Adapt<IEnumerable<BookInfo>>();
         }
+
+
+        public async Task<IEnumerable<PersonInfo>> GetOwnersOfBook(Guid Id)
+        {
+            var filter = Builders<BookDoc>.Filter.Eq(m => m.Id, Id);
+            var book = (await context.BookCollection.FindAsync(filter)).FirstOrDefaultAsync().Result;
+            var owners = book.Owners;
+            return owners == null ? Enumerable.Empty<PersonInfo>() : owners.ToList().Adapt<IEnumerable<PersonInfo>>();
+        }
     }
 }
