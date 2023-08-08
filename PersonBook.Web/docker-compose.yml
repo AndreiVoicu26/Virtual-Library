@@ -1,0 +1,18 @@
+﻿version: '3'
+services:
+  myapplication:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    environment:
+      - mongodb+srv://andreivoicu:mongo-pass@cluster0.inwwyhl.mongodb.net/personsDB?retryWrites=true&w=majority=mongodb://andreivoicu:mongo-pass@mongodb
+    command: '/bin/bash -c "sleep 5; mongosh $$mongodb+srv://andreivoicu:mongo-pass@cluster0.inwwyhl.mongodb.net/personsDB?retryWrites=true&w=majority --eval \"show dbs;\""'
+    depends_on:
+      - mongodb
+  mongodb:
+    image: mongodb/mongodb-community-server:6.0-ubi8
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=andreivoicu
+      - MONGO_INITDB_ROOT_PASSWORD=mongo-pass
+    volumes:
+      - type: bind
+        source: ./data
+        target: /data/db
